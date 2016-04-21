@@ -4,7 +4,7 @@ import requests
 import json
 
 CACHE_DIR = '.data_cache'
-EXPORT_URL_BASE = 'http://content.warframe.com/MobileExport/Manifest/'
+EXPORT_URL_BASE = 'http://content.warframe.com/MobileExport'
 
 _DATA = {}
 
@@ -21,7 +21,7 @@ def _generate_data_func(data_type):
         filename = 'Export' + data_type + '.json'
         cache_path = os.path.join(CACHE_DIR, filename)
         if not os.path.exists(cache_path):
-            url = EXPORT_URL_BASE + filename
+            url = EXPORT_URL_BASE + '/Manifest/' + filename
             r = requests.get(url)
             data = r.json(strict=False)
             data_values = data.popitem()[1]
@@ -43,3 +43,9 @@ for data_type in {'Manifest', 'Upgrades', 'Weapons', 'Warframes', 'Sentinels',
                   'Enemies', 'Resources', 'Drones', 'Customs', 'Flavour', 'Keys',
                   'Gear', 'Regions'}:
     setattr(current_module, data_type.lower(), _generate_data_func(data_type))
+
+
+def image_url(unique_name):
+    texture_location = current_module.manifest()[unique_name]['textureLocation']
+    url = EXPORT_URL_BASE + texture_location
+    return url.replace('\\', '/')
