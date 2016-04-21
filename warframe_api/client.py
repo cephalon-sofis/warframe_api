@@ -38,7 +38,7 @@ class Client():
     def __init__(self, email, password):
         self._email = email
         self._password_hash = Whirlpool(password).hexdigest()
-        self._session_data = {}
+        self._session_data = None
 
     def _post_message(self, url, data):
         headers={
@@ -93,7 +93,7 @@ class Client():
     def logout(self):
         url = 'https://api.warframe.com/API/PHP/logout.php'
         self._post_message(url, self._session_data)
-        self._session_data = {}
+        self._session_data = None
 
     @login_required
     def get_inventory(self):
