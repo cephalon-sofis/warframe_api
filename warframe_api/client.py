@@ -37,6 +37,8 @@ def login_required(func):
     return wrap
 
 class Client():
+    URL_BASE = 'https://api.warframe.com'
+
     def __init__(self, email, password):
         self._email = email
         self._password_hash = hashlib.new('whirlpool', password.encode()).hexdigest()
@@ -64,7 +66,7 @@ class Client():
             return r.text
 
     def login(self):
-        url = 'https://api.warframe.com/API/PHP/login.php'
+        url = Client.URL_BASE + '/API/PHP/login.php'
 
         data = json.dumps({
             'email': self._email,
@@ -101,17 +103,17 @@ class Client():
 
     @login_required
     def logout(self):
-        url = 'https://api.warframe.com/API/PHP/logout.php'
+        url = Client.URL_BASE + '/API/PHP/logout.php'
         self._post_message(url, self._session_data)
         self._session_data = None
 
     @login_required
     def get_inventory(self):
-        url = 'https://api.warframe.com/API/PHP/inventory.php'
+        url = Client.URL_BASE + '/API/PHP/inventory.php'
         return self._post_message(url, self._session_data)
 
     def get_recipe_details(self, blueprint_unique_names):
-        url = 'https://api.warframe.com/API/PHP/mobileRetrieveRecipes.php'
+        url = Client.URL_BASE + '/API/PHP/mobileRetrieveRecipes.php'
         data = {
             'recipes': json.dumps([{'ItemType': blueprint} for blueprint in blueprint_unique_names]),
             'mobile': True
@@ -121,7 +123,7 @@ class Client():
     @login_required
     def start_recipe(self, blueprint_unique_name):
         query_string = urlencode(self._session_data)
-        url = 'https://api.warframe.com/API/PHP/startRecipe.php?' + query_string
+        url = Client.URL_BASE + '/API/PHP/startRecipe.php?' + query_string
 
         recipe_details = self.get_recipe_details([blueprint_unique_name])[0]
         data = json.dumps({
@@ -134,7 +136,7 @@ class Client():
     def claim_recipe(self, blueprint_unique_name, rush=False):
         query_string = urlencode({**self._session_data,
                                   **{'recipeName': blueprint_unique_name}})
-        url = 'https://api.warframe.com/API/PHP/claimCompletedRecipe.php?' + query_string
+        url = Client.URL_BASE + '/API/PHP/claimCompletedRecipe.php?' + query_string
         if rush:
             url += '&rush=true'
         return self._post_message(url, {})
@@ -143,7 +145,7 @@ class Client():
     def get_active_extractors(self):
         query_string = urlencode({**self._session_data,
                                   **{'GetActive': 'true'}})
-        url = 'https://api.warframe.com/API/PHP/drones.php?' + query_string
+        url = Client.URL_BASE + '/API/PHP/drones.php?' + query_string
         return self._post_message(url, {})
 
     @login_required
@@ -152,7 +154,7 @@ class Client():
         query_string = urlencode({**self._session_data,
                                   **{'droneId': extractor_id,
                                      'systemIndex': system_index}})
-        url = 'https://api.warframe.com/API/PHP/drones.php?' + query_string
+        url = Client.URL_BASE + '/API/PHP/drones.php?' + query_string
         post_data = data.extractor_json(extractor['ItemType'])
         return self._post_message(url, post_data)
 
@@ -162,6 +164,6 @@ class Client():
         query_string = urlencode({**self._session_data,
                                   **{'collectDroneId': extractor_id,
                                      'binIndex': -1}})
-        url = 'https://api.warframe.com/API/PHP/drones.php?' + query_string
+        url = Client.URL_BASE + '/API/PHP/drones.php?' + query_string
         post_data = data.extractor_json(extractor['ItemType'])
         return self._post_message(url, post_data)
