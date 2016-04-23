@@ -95,7 +95,7 @@ class Client():
 
         #print(login_info)
         self._session_data = {
-            'mobile': True,
+            'mobile': 'true',
             'accountId': login_info['id'],
             'nonce': login_info['Nonce']
         }
@@ -134,7 +134,7 @@ class Client():
     @login_required
     def claim_recipe(self, blueprint_unique_name, rush=False):
         query_string = urlencode({**self._session_data,
-                                  **{'mobile': 'true', 'recipeName': blueprint_unique_name}})
+                                  **{'recipeName': blueprint_unique_name}})
         url = 'https://api.warframe.com/API/PHP/claimCompletedRecipe.php?' + query_string
         if rush:
             url += '&rush=true'
@@ -143,7 +143,7 @@ class Client():
     @login_required
     def get_active_extractors(self):
         query_string = urlencode({**self._session_data,
-                                  **{'mobile': 'true', 'GetActive': 'true'}})
+                                  **{'GetActive': 'true'}})
         url = 'https://api.warframe.com/API/PHP/drones.php?' + query_string
         return self._post_message(url, {})
 
@@ -151,8 +151,7 @@ class Client():
     def deploy_extractor(self, extractor, system_index):
         extractor_id = extractor['ItemId']['$id']
         query_string = urlencode({**self._session_data,
-                                  **{'mobile': 'true',
-                                     'droneId': extractor_id,
+                                  **{'droneId': extractor_id,
                                      'systemIndex': system_index}})
         url = 'https://api.warframe.com/API/PHP/drones.php?' + query_string
 
