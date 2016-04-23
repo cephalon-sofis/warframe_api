@@ -40,7 +40,7 @@ class Client():
         self._session_data = None
 
     def __enter__(self):
-        client.login()
+        self.login()
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
