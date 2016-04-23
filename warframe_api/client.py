@@ -104,3 +104,24 @@ class Client():
     def get_inventory(self):
         url = 'https://api.warframe.com/API/PHP/inventory.php'
         return self._post_message(url, self._session_data)
+
+    def get_recipe_details(self, blueprint_unique_names):
+        url = 'https://api.warframe.com/API/PHP/mobileRetrieveRecipes.php'
+        data = {
+            'recipes': json.dumps([{'ItemType': blueprint} for blueprint in blueprint_unique_names]),
+            'mobile': True
+        }
+        return self._post_message(url, data)
+
+    @login_required
+    def start_recipe(self, blueprint_unique_name):
+        url = 'https://api.warframe.com/API/PHP/startRecipe.php?accountId={account_id}&nonce={nonce}&mobile=true'
+        recipe_details = self.get_recipe_details([blueprint_unique_name])[0]
+        data = json.dumps({
+            'RecipeName': blueprint_unique_name,
+            'Ids': ['' for ingredient in recipe_details['Ingredients']]
+        })
+
+        return self._post_message(url.format(account_id=self._session_data['accountId'],
+                                             nonce=self._session_data['nonce']),
+                                  data)
