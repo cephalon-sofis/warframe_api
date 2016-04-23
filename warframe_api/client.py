@@ -1,10 +1,9 @@
 import json
 import time
-import requests
-
+import hashlib
 from functools import wraps
 
-from .whirlpool import Whirlpool
+import requests
 
 class LoginError(Exception):
     def __init__(self, text, code):
@@ -37,7 +36,7 @@ def login_required(func):
 class Client():
     def __init__(self, email, password):
         self._email = email
-        self._password_hash = Whirlpool(password).hexdigest()
+        self._password_hash = hashlib.new('whirlpool', password.encode()).hexdigest()
         self._session_data = None
 
     def _post_message(self, url, data):
