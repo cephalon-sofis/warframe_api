@@ -66,7 +66,6 @@ class Client():
     def login(self):
         url = 'https://api.warframe.com/API/PHP/login.php'
 
-        # While most data is form-encoded, login data is sent as JSON for some reason...
         data = json.dumps({
             'email': self._email,
             'password': self._password_hash,
@@ -81,7 +80,7 @@ class Client():
 
             # Taken from the Android app.
             'appVersion': '4.1.2.4',
-        }, separators=(',', ':')) # Compact encoding.
+        })
 
         try:
             login_info = self._post_message(url, data)
@@ -93,12 +92,12 @@ class Client():
             else:
                 raise LoginError(e.response.text, e.response.status_code) from e
 
-        #print(login_info)
         self._session_data = {
             'mobile': 'true',
             'accountId': login_info['id'],
             'nonce': login_info['Nonce']
         }
+        return login_info
 
     @login_required
     def logout(self):
