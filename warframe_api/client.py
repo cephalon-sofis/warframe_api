@@ -156,7 +156,28 @@ class Client():
         url = 'https://api.warframe.com/API/PHP/drones.php?' + query_string
 
         extractor_data = data.drones()[extractor['ItemType']]
+        post_data = json.dumps({
+            'droneRes': extractor_data['uniqueName'],
+            'binCount': extractor_data['binCount'],
+            'binCapacity': extractor_data['binCapacity'],
+            'droneDurability': extractor_data['durability'],
+            'fillRate': extractor_data['fillRate'],
+            'repairRate': extractor_data['repairRate'],
+            'capacityMultipliers': extractor_data['capacityMultiplier'],
+            'probabilities': extractor_data['probabilty'], #sic
+            'specialities': extractor_data['specialities']
+        })
+        return self._post_message(url, post_data)
 
+    @login_required
+    def collect_extractor(self, extractor):
+        extractor_id = extractor['ItemId']['$id']
+        query_string = urlencode({**self._session_data,
+                                  **{'collectDroneId': extractor_id,
+                                     'binIndex': -1}})
+        url = 'https://api.warframe.com/API/PHP/drones.php?' + query_string
+
+        extractor_data = data.drones()[extractor['ItemType']]
         post_data = json.dumps({
             'droneRes': extractor_data['uniqueName'],
             'binCount': extractor_data['binCount'],
