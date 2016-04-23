@@ -1,6 +1,7 @@
 import json
 import time
 import hashlib
+from urllib.parse import urlencode
 from functools import wraps
 
 import requests
@@ -115,10 +116,8 @@ class Client():
 
     @login_required
     def start_recipe(self, blueprint_unique_name):
-        query_string = '?accountId={account_id}&nonce={nonce}&mobile=true'.format(
-            account_id=self._session_data['accountId'],
-            nonce=self._session_data['nonce'])
-        url = 'https://api.warframe.com/API/PHP/startRecipe.php' + query_string
+        query_string = urlencode(self._session_data)
+        url = 'https://api.warframe.com/API/PHP/startRecipe.php?' + query_string
 
         recipe_details = self.get_recipe_details([blueprint_unique_name])[0]
         data = json.dumps({
@@ -129,11 +128,9 @@ class Client():
 
     @login_required
     def claim_recipe(self, blueprint_unique_name, rush=False):
-        query_string = '?accountId={account_id}&nonce={nonce}&recipeName={recipe}&mobile=true'.format(
-            account_id=self._session_data['accountId'],
-            nonce=self._session_data['nonce'],
-            recipe=blueprint_unique_name)
-        url = 'https://api.warframe.com/API/PHP/claimCompletedRecipe.php' + query_string
+        query_string = urlencode({**self._session_data,
+                                  **{'mobile': 'true', 'recipeName': blueprint_unique_name}})
+        url = 'https://api.warframe.com/API/PHP/claimCompletedRecipe.php?' + query_string
         if rush:
             url += '&rush=true'
         return self._post_message(url, {})
