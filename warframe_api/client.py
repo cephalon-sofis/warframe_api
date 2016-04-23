@@ -128,6 +128,8 @@ class Client():
         recipe_details = self.get_recipe_details([blueprint_unique_name])[0]
         data = json.dumps({
             'RecipeName': blueprint_unique_name,
+            # This is what the mobile app does. It's probably why you can't
+            # start recipes that include weapons as ingredients.
             'Ids': ['' for ingredient in recipe_details['Ingredients']]
         })
         return self._post_message(url, data)

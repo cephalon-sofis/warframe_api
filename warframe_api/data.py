@@ -63,6 +63,7 @@ def systems():
     return all_systems
 
 def extractor_json(unique_name):
+    ''' Reformat the drones data for use with the extractor API. '''
     extractor = current_module.drones()[unique_name]
     return json.dumps({
         'droneRes': extractor['uniqueName'],
