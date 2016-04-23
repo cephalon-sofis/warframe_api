@@ -39,6 +39,14 @@ class Client():
         self._password_hash = hashlib.new('whirlpool', password.encode()).hexdigest()
         self._session_data = None
 
+    def __enter__(self):
+        client.login()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if self._session_data:
+            self.logout()
+
     def _post_message(self, url, data):
         headers={
             'X-Requested-With': 'XMLHttpRequest',
