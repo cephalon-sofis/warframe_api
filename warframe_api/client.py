@@ -115,13 +115,25 @@ class Client():
 
     @login_required
     def start_recipe(self, blueprint_unique_name):
-        url = 'https://api.warframe.com/API/PHP/startRecipe.php?accountId={account_id}&nonce={nonce}&mobile=true'
+        query_string = '?accountId={account_id}&nonce={nonce}&mobile=true'.format(
+            account_id=self._session_data['accountId'],
+            nonce=self._session_data['nonce'])
+        url = 'https://api.warframe.com/API/PHP/startRecipe.php' + query_string
+
         recipe_details = self.get_recipe_details([blueprint_unique_name])[0]
         data = json.dumps({
             'RecipeName': blueprint_unique_name,
             'Ids': ['' for ingredient in recipe_details['Ingredients']]
         })
+        return self._post_message(url, data)
 
-        return self._post_message(url.format(account_id=self._session_data['accountId'],
-                                             nonce=self._session_data['nonce']),
-                                  data)
+    @login_required
+    def claim_recipe(self, blueprint_unique_name, rush=False):
+        query_string = '?accountId={account_id}&nonce={nonce}&recipeName={recipe}&mobile=true'.format(
+            account_id=self._session_data['accountId'],
+            nonce=self._session_data['nonce'],
+            recipe=blueprint_unique_name)
+        url = 'https://api.warframe.com/API/PHP/claimCompletedRecipe.php' + query_string
+        if rush:
+            url += '&rush=true'
+        return self._post_message(url, {})
