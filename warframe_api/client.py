@@ -56,7 +56,10 @@ class Client():
 
         r = requests.post(url, data=data, headers=headers)
         r.raise_for_status()
-        return r.json()
+        try:
+            return r.json()
+        except json.decoder.JSONDecodeError:
+            return r.text
 
     def login(self):
         url = 'https://api.warframe.com/API/PHP/login.php'
