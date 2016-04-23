@@ -4,6 +4,8 @@ import hashlib
 from urllib.parse import urlencode
 from functools import wraps
 
+from . import data
+
 import requests
 
 class LoginError(Exception):
@@ -137,3 +139,34 @@ class Client():
         if rush:
             url += '&rush=true'
         return self._post_message(url, {})
+
+    @login_required
+    def get_active_extractors(self):
+        query_string = urlencode({**self._session_data,
+                                  **{'mobile': 'true', 'GetActive': 'true'}})
+        url = 'https://api.warframe.com/API/PHP/drones.php?' + query_string
+        return self._post_message(url, {})
+
+    @login_required
+    def deploy_extractor(self, extractor, system_index):
+        extractor_id = extractor['ItemId']['$id']
+        query_string = urlencode({**self._session_data,
+                                  **{'mobile': 'true',
+                                     'droneId': extractor_id,
+                                     'systemIndex': system_index}})
+        url = 'https://api.warframe.com/API/PHP/drones.php?' + query_string
+
+        extractor_data = data.drones()[extractor['ItemType']]
+
+        post_data = json.dumps({
+            'droneRes': extractor_data['uniqueName'],
+            'binCount': extractor_data['binCount'],
+            'binCapacity': extractor_data['binCapacity'],
+            'droneDurability': extractor_data['durability'],
+            'fillRate': extractor_data['fillRate'],
+            'repairRate': extractor_data['repairRate'],
+            'capacityMultipliers': extractor_data['capacityMultiplier'],
+            'probabilities': extractor_data['probabilty'], #sic
+            'specialities': extractor_data['specialities']
+        })
+        return self._post_message(url, post_data)
