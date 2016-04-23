@@ -62,6 +62,19 @@ def systems():
     _DATA['Systems'] = all_systems
     return all_systems
 
+def extractor_json(unique_name):
+    extractor = current_module.drones()[unique_name]
+    return json.dumps({
+        'droneRes': extractor['uniqueName'],
+        'binCount': extractor['binCount'],
+        'binCapacity': extractor['binCapacity'],
+        'droneDurability': extractor['durability'],
+        'fillRate': extractor['fillRate'],
+        'repairRate': extractor['repairRate'],
+        'capacityMultipliers': extractor['capacityMultiplier'],
+        'probabilities': extractor['probabilty'], #sic
+        'specialities': extractor['specialities']
+    })
 
 def image_url(unique_name):
     texture_location = current_module.manifest()[unique_name]['textureLocation']

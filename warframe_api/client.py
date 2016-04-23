@@ -154,19 +154,7 @@ class Client():
                                   **{'droneId': extractor_id,
                                      'systemIndex': system_index}})
         url = 'https://api.warframe.com/API/PHP/drones.php?' + query_string
-
-        extractor_data = data.drones()[extractor['ItemType']]
-        post_data = json.dumps({
-            'droneRes': extractor_data['uniqueName'],
-            'binCount': extractor_data['binCount'],
-            'binCapacity': extractor_data['binCapacity'],
-            'droneDurability': extractor_data['durability'],
-            'fillRate': extractor_data['fillRate'],
-            'repairRate': extractor_data['repairRate'],
-            'capacityMultipliers': extractor_data['capacityMultiplier'],
-            'probabilities': extractor_data['probabilty'], #sic
-            'specialities': extractor_data['specialities']
-        })
+        post_data = data.extractor_json(extractor['ItemType'])
         return self._post_message(url, post_data)
 
     @login_required
@@ -176,17 +164,5 @@ class Client():
                                   **{'collectDroneId': extractor_id,
                                      'binIndex': -1}})
         url = 'https://api.warframe.com/API/PHP/drones.php?' + query_string
-
-        extractor_data = data.drones()[extractor['ItemType']]
-        post_data = json.dumps({
-            'droneRes': extractor_data['uniqueName'],
-            'binCount': extractor_data['binCount'],
-            'binCapacity': extractor_data['binCapacity'],
-            'droneDurability': extractor_data['durability'],
-            'fillRate': extractor_data['fillRate'],
-            'repairRate': extractor_data['repairRate'],
-            'capacityMultipliers': extractor_data['capacityMultiplier'],
-            'probabilities': extractor_data['probabilty'], #sic
-            'specialities': extractor_data['specialities']
-        })
+        post_data = data.extractor_json(extractor['ItemType'])
         return self._post_message(url, post_data)
