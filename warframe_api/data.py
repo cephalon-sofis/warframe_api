@@ -44,6 +44,24 @@ for data_type in {'Manifest', 'Upgrades', 'Weapons', 'Warframes', 'Sentinels',
                   'Gear', 'Regions'}:
     setattr(current_module, data_type.lower(), _generate_data_func(data_type))
 
+def systems():
+    ''' All of the regions grouped by system. '''
+    if 'Systems' in _DATA:
+        return _DATA['Systems']
+
+    all_systems = {}
+    for region in current_module.regions().values():
+        system_name = region['systemName']
+        if system_name not in all_systems:
+            all_systems[system_name] = {
+                'systemIndex': region['systemIndex'],
+                'regions': []
+            }
+        all_systems[system_name]['regions'].append(region['uniqueName'])
+
+    _DATA['Systems'] = all_systems
+    return all_systems
+
 
 def image_url(unique_name):
     texture_location = current_module.manifest()[unique_name]['textureLocation']
