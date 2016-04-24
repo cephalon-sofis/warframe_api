@@ -3,7 +3,7 @@ import sys
 import requests
 import json
 
-CACHE_DIR = '.data_cache'
+CACHE_DIR = os.path.join(os.path.expanduser('~'), '.warframe_data_cache')
 EXPORT_URL_BASE = 'http://content.warframe.com/MobileExport'
 
 _DATA = {}
