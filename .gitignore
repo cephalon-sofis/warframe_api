@@ -1,0 +1,7 @@
+.data_cache
+__pycache__
+*.pyc
+config.ini
+*.egg-info
+build/
+dist/
