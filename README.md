@@ -6,6 +6,12 @@ See `extractors.py` for an example of how you might use it.
 
 **Note**: This has only been tested with Python 3.5. It probably won't work with Python 2.x.
 
+## Installaton
+
+Either clone this repository and run: `python setup.py install`
+
+Or through pip: `pip3 install git+http://github.com/cephalon-sofis/warframe_api.git`
+
 ## What's Done
 
 * Inventory retrieval
