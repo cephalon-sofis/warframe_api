@@ -155,7 +155,7 @@ class Client():
                                   **{'GetActive': 'true'}})
         url = Client.URL_BASE + '/API/PHP/drones.php?' + query_string
         response = self._post_message(url, {})
-        return response['ActiveDrones']
+        return response.get('ActiveDrones', [])
 
     @login_required
     def deploy_extractor(self, extractor, system_index, active_extractors=None):
