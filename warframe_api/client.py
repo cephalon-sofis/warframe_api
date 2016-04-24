@@ -6,26 +6,9 @@ from functools import wraps
 
 from . import data
 
+from .exceptions import *
+
 import requests
-
-class LoginError(Exception):
-    def __init__(self, text, code):
-        self.text = text
-        self.code = code
-
-    def __str__(self):
-        return self.text
-
-class NotLoggedInException(Exception):
-    pass
-
-class AlreadyLoggedInException(LoginError):
-    def __init__(self):
-        super().__init__('Already logged in', 409)
-
-class VersionOutOfDateException(LoginError):
-    def __init__(self):
-        super().__init__('Version out of date', 400)
 
 def login_required(func):
     @wraps(func)
