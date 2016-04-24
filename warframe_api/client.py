@@ -148,7 +148,8 @@ class Client():
         query_string = urlencode({**self._session_data,
                                   **{'GetActive': 'true'}})
         url = Client.URL_BASE + '/API/PHP/drones.php?' + query_string
-        return self._post_message(url, {})
+        response = self._post_message(url, {})
+        return response['ActiveDrones']
 
     @login_required
     def deploy_extractor(self, extractor, system_index):
