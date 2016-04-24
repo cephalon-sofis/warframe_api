@@ -36,7 +36,7 @@ class Client():
             self.logout()
 
     def _post_message(self, url, data):
-        headers={
+        headers = {
             'X-Requested-With': 'XMLHttpRequest',
             'User-Agent': '',
         }
