@@ -104,7 +104,17 @@ class Client():
         return self._post_message(url, data)
 
     @login_required
-    def start_recipe(self, blueprint_unique_name):
+    def start_recipe(self, blueprint_unique_name, inventory=None):
+        if inventory is None:
+            inventory = self.get_inventory()
+
+        for recipe in inventory['PendingRecipes']:
+            if recipe['ItemType'] == blueprint_unique_name:
+                # The server will let you start a recipe more than once,
+                # but the game gets really confused by this when you go to claim them.
+                # It's best to not do suspicious things like that.
+                raise RecipeAlreadyStartedException()
+
         query_string = urlencode(self._session_data)
         url = Client.URL_BASE + '/API/PHP/startRecipe.php?' + query_string
 
@@ -118,7 +128,20 @@ class Client():
         return self._post_message(url, data)
 
     @login_required
-    def claim_recipe(self, blueprint_unique_name, rush=False):
+    def claim_recipe(self, blueprint_unique_name, rush=False, inventory=None):
+        if inventory is None:
+            inventory = self.get_inventory()
+
+        for recipe in inventory['PendingRecipes']:
+            if recipe['ItemType'] == blueprint_unique_name:
+                if not rush and time.time() < recipe['CompletionDate']['sec']:
+                    raise RecipeNotFinishedException()
+                break
+        else:
+            # Can't claim a recipe that hasn't been started, and it might
+            # look suspicious to make a request to do so.
+            raise RecipeNotStartedException()
+
         query_string = urlencode({**self._session_data,
                                   **{'recipeName': blueprint_unique_name}})
         url = Client.URL_BASE + '/API/PHP/claimCompletedRecipe.php?' + query_string
@@ -135,8 +158,15 @@ class Client():
         return response['ActiveDrones']
 
     @login_required
-    def deploy_extractor(self, extractor, system_index):
+    def deploy_extractor(self, extractor, system_index, active_extractors=None):
         extractor_id = extractor['ItemId']['$id']
+        if active_extractors is None:
+            active_extractors = self.get_active_extractors()
+
+        for active_extractor in active_extractors:
+            if active_extractor['ItemId']['$id'] == extractor_id:
+                raise ExtractorAlreadyDeployedException()
+
         query_string = urlencode({**self._session_data,
                                   **{'droneId': extractor_id,
                                      'systemIndex': system_index}})
@@ -145,8 +175,22 @@ class Client():
         return self._post_message(url, post_data)
 
     @login_required
-    def collect_extractor(self, extractor):
+    def collect_extractor(self, extractor, force_if_early=False, active_extractors=None):
         extractor_id = extractor['ItemId']['$id']
+        if active_extractors is None:
+            active_extractors = self.get_active_extractors()
+
+        for active_extractor in active_extractors:
+            if active_extractor['ItemId']['$id'] == extractor_id:
+                deploy_time = active_extractor['DeployTime']['sec'] + float(active_extractor['DeployTime']['usec']) / 1e6
+                fill_time = data.drones()[active_extractor['ItemType']]['fillRate'] * 60 * 60
+                finish_time = deploy_time + fill_time
+                if not force_if_early and time.time() < finish_time:
+                    raise ExtractorNotFinishedException()
+                break
+        else:
+            raise ExtractorNotDeployedException()
+
         query_string = urlencode({**self._session_data,
                                   **{'collectDroneId': extractor_id,
                                      'binIndex': -1}})
