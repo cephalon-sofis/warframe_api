@@ -54,7 +54,7 @@ def systems():
         system_name = region['systemName']
         if system_name not in all_systems:
             all_systems[system_name] = {
-                'systemIndex': region['systemIndex'],
+                'systemIndex': region['systemIndex'] + 1, # For some reason, the data is off by 1?
                 'regions': []
             }
         all_systems[system_name]['regions'].append(region['uniqueName'])
