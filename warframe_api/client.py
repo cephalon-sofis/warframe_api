@@ -37,6 +37,8 @@ class Client():
 
     def _post_message(self, url, data):
         headers = {
+            # This is the Android app's ID.
+            'X-Titanium-Id': '9bbd1ddd-f7f2-402d-9777-873f458cb50c',
             'X-Requested-With': 'XMLHttpRequest',
             'User-Agent': '',
         }
