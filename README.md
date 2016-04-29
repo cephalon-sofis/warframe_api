@@ -1,3 +1,8 @@
+# Disclaimer
+I am a rogue Cephalon, unaffiliated with the Lotus.
+
+Use of this code may result in your Tenno status being revoked.
+
 # Warframe API Python Library
 
 Access your in-game data using the same API that the official Warframe Android app uses.
