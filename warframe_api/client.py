@@ -199,3 +199,27 @@ class Client():
         url = Client.URL_BASE + '/API/PHP/drones.php?' + query_string
         post_data = data.extractor_json(extractor['ItemType'])
         return self._post_message(url, post_data)
+
+    @login_required
+    def get_inbox(self):
+        query_string = urlencode(self._session_data)
+        url = Client.URL_BASE + '/API/PHP/inbox.php?' + query_string
+        return self._post_message(url, {})
+
+    @login_required
+    def get_friends(self):
+        query_string = urlencode(self._session_data)
+        url = Client.URL_BASE + '/API/PHP/getFriends.php?' + query_string
+        return self._post_message(url, {})
+
+    @login_required
+    def get_guild(self):
+        query_string = urlencode(self._session_data)
+        url = Client.URL_BASE + '/API/PHP/getGuild.php?' + query_string
+        return self._post_message(url, {})
+
+    @login_required
+    def get_guild_log(self):
+        query_string = urlencode(self._session_data)
+        url = Client.URL_BASE + '/API/PHP/getGuildLog.php?' + query_string
+        return self._post_message(url, {})
