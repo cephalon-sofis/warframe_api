@@ -50,6 +50,21 @@ class Client():
         except json.decoder.JSONDecodeError:
             return r.text
 
+    def _get_message(self, url):
+        headers = {
+            # This is the Android app's ID.
+            'X-Titanium-Id': '9bbd1ddd-f7f2-402d-9777-873f458cb50c',
+            'X-Requested-With': 'XMLHttpRequest',
+            'User-Agent': '',
+        }
+
+        r = requests.get(url, headers=headers)
+        r.raise_for_status()
+        try:
+            return r.json()
+        except json.decoder.JSONDecodeError:
+            return r.text
+
     def login(self):
         url = Client.URL_BASE + '/API/PHP/login.php'
 
@@ -66,7 +81,7 @@ class Client():
             'mobile': True,
 
             # Taken from the Android app.
-            'appVersion': '4.1.2.4',
+            'appVersion': '4.2.8.0',
         })
 
         try:
@@ -74,6 +89,15 @@ class Client():
         except requests.exceptions.HTTPError as e:
             if e.response.status_code == 409:
                 raise AlreadyLoggedInException() from e
+            elif e.response.status_code == 400 and 'new hardware detected' in e.response.text:
+                print(e.response.text)
+                code = input('please check email and input a code. \n> ')
+                try:
+                    self._get_message(Client.URL_BASE + '/API/PHP/authorizeNewHwid.php?code={0}&mobile=true'.format(code))
+                except requests.exceptions.HTTPError as e:
+                    print(e.response.text)
+                    print(e.response.status_code)
+                pass
             elif e.response.status_code == 400 and 'version out of date' in e.response.text:
                 raise VersionOutOfDateException() from e
             else:
